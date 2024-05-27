@@ -1,38 +1,47 @@
 import { ShareEntity, TransactionEntity } from 'src/entities';
 import { InjectModel } from '@nestjs/sequelize';
 import { ITransaction } from '../interfaces/ITransaction';
-import { BuyShareRequestDto } from 'src/dtos/portfolioDtos/requests/BuyShareRequest.dto';
-import { SellShareRequestDto } from 'src/dtos/portfolioDtos/requests/SellShareRequest.dto';
+import { BuySellShareRequestDto } from 'src/dtos/portfolioDtos/requests/BuySellShareRequest.dto';
 
 export class TransactionRepository implements ITransaction {
   constructor(
     @InjectModel(TransactionEntity)
     private readonly transactionModel: typeof TransactionEntity,
   ) {}
+  listAllTransactions(): Promise<TransactionEntity[]> {
+    return this.transactionModel.findAll();
+  }
+  listUsersAllTransactions(user: any): Promise<TransactionEntity[]> {
+    return this.transactionModel.findAll({
+      where: { userId: user.sub },
+    });
+  }
   async sellCreate(
-    sellShareRequestDto: SellShareRequestDto,
+    buySellShareRequestDto: BuySellShareRequestDto,
     share: ShareEntity,
     currUser: any,
-  ): Promise<TransactionEntity> {
-    return await this.transactionModel.create({
+  ) {
+    await this.transactionModel.create({
       userId: currUser.sub,
-      shareId: sellShareRequestDto.shareId,
-      amount: sellShareRequestDto.amount,
+      shareId: buySellShareRequestDto.shareId,
+      amount: buySellShareRequestDto.amount,
       price: share.rate,
-      type: sellShareRequestDto.type,
+      type: buySellShareRequestDto.type,
     });
   }
   async buyCreate(
-    buyShareRequestDto: BuyShareRequestDto,
+    buySellShareRequestDto: BuySellShareRequestDto,
     share: ShareEntity,
     currUser: any,
-  ): Promise<TransactionEntity> {
-    return await this.transactionModel.create({
+  ) {
+    console.log(buySellShareRequestDto);
+
+    await this.transactionModel.create({
       userId: currUser.sub,
-      shareId: buyShareRequestDto.shareId,
-      amount: buyShareRequestDto.amount,
+      shareId: buySellShareRequestDto.shareId,
+      amount: buySellShareRequestDto.amount,
       price: share.rate,
-      type: buyShareRequestDto.type,
+      type: buySellShareRequestDto.type,
     });
   }
 }

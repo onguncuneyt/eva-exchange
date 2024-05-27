@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { ShareModule } from './modules/share.module';
 import { ConfigModule } from '@nestjs/config';
 import { PortfolioModule } from './modules/portfolio.module';
+import { TransactionModule } from './modules/transaction.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { PortfolioModule } from './modules/portfolio.module';
     UsersModule,
     ShareModule,
     PortfolioModule,
+    TransactionModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),

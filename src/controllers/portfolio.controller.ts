@@ -3,9 +3,7 @@ import { PortfolioService } from '../services/portfolio.service';
 import { Roles } from '../auth/decorators/role.decorator';
 import { RoleEnum } from '../entities';
 import { Request } from 'express';
-import { BuyShareRequestDto } from 'src/dtos/portfolioDtos/requests/BuyShareRequest.dto';
-import { SellShareRequestDto } from 'src/dtos/portfolioDtos/requests/SellShareRequest.dto';
-import { AddShareToPortfolioDto } from 'src/dtos/portfolioDtos/requests/AddShareToPortfolioRequest.dto';
+import { BuySellShareRequestDto } from 'src/dtos/portfolioDtos/requests/BuySellShareRequest.dto';
 import { PortfolioCreateResponseDto } from 'src/dtos/portfolioDtos/responses/PortfolioCreateResponseDto';
 import { ResultHelper } from 'src/core/utils/result-helper.util';
 import { ResultData } from 'src/core/results/result-data.result';
@@ -23,8 +21,6 @@ export class PortfolioController {
     @Req() req: Request,
   ): Promise<ResultData<PortfolioCreateResponseDto>> {
     try {
-      console.log(req.user);
-
       const portfolioResponse = await this.portfolioService.createPortfolio(
         req.user,
       );
@@ -37,36 +33,46 @@ export class PortfolioController {
   @Post('buy')
   @Roles(RoleEnum.USER)
   async addInPortfolio(
-    @Body() buyShareRequestDto: BuyShareRequestDto,
+    @Body() buySellShareRequestDto: BuySellShareRequestDto,
     @Req() req: Request,
   ) {
-    return this.portfolioService.buyShare(buyShareRequestDto, req.user);
+    try {
+      return this.portfolioService.buyShare(buySellShareRequestDto, req.user);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   @Post('sell')
   @Roles(RoleEnum.USER)
   async sellSharePortfolio(
-    @Body() sellSharePortfolio: SellShareRequestDto,
+    @Body() buySellShareRequestDto: BuySellShareRequestDto,
     @Req() req: Request,
   ) {
-    return this.portfolioService.sellShare(sellSharePortfolio, req.user);
+    try {
+      return this.portfolioService.sellShare(buySellShareRequestDto, req.user);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  @Post('add')
+  @Get('portfolio-shares')
   @Roles(RoleEnum.USER)
-  async addShareInPortfolio(
-    @Body() addShareInPortfolio: AddShareToPortfolioDto,
-    @Req() req: Request,
-  ) {
-    return this.portfolioService.addShareToPortfolio(
-      addShareInPortfolio,
-      req.user,
-    );
+  async getAllPortfolioShares(@Req() req: Request) {
+    try {
+      return this.portfolioService.getAllPortfolio(req.user);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  @Get('all')
+  @Get('list-portfolios')
   @Roles(RoleEnum.USER)
-  async getAllPortfolio(@Req() req: Request) {
-    return this.portfolioService.getAllPortfolio(req.user);
+  async getAllPortfolios(@Req() req: Request) {
+    try {
+      return this.portfolioService.listAllPortfolios(req.user);
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

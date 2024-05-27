@@ -31,14 +31,24 @@ export class PortfolioRepository implements IPortfolio {
     private readonly transactionModel: typeof TransactionEntity,
   ) {}
   async create(user: any): Promise<PortfolioEntity> {
-    return await this.portfolioModel.create({
-      userId: user.sub,
-    });
+    return await this.portfolioModel.create(user);
   }
 
   async findOne(user: any) {
     return await this.portfolioModel.findOne({
       where: { userId: user.sub },
+    });
+  }
+
+  async findById(userId: any) {
+    return await this.portfolioModel.findOne({
+      where: { userId: userId },
+    });
+  }
+
+  async findAllById(userId: any) {
+    return await this.portfolioModel.findAll({
+      where: { userId: userId },
     });
   }
 }

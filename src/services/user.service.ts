@@ -1,24 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { UserCreateRequestDto } from 'src/auth/dto/requests/UserCreateRequest.dto';
 import { UserRepository } from 'src/dao/repositories/UserRepository';
+import { AddMoneyDto } from 'src/dtos/userDtos/requests/AddMoneyRequest.dto';
+import { UserEntity } from 'src/entities';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async findOne(id: number) {
-    return {};
+  async findUsers() {
+    return this.userRepository.findUsers();
   }
 
-  async create(user: UserCreateRequestDto) {
-    return await this.userRepository.create(user);
+  async updateAdminStatus(id: string): Promise<UserEntity> {
+    return this.userRepository.updateAdminStatus(id);
   }
 
-  async update(id: number, data: any) {
-    return {};
+  async addMoney(addMoneyDto: AddMoneyDto, currUser: any) {
+    return this.userRepository.addMoney(addMoneyDto, currUser);
   }
 
-  async remove(id: number) {
-    return {};
+  async bulkCreateUsers(usersData: any): Promise<UserEntity[]> {
+    try {
+      const createdUsers = await this.userRepository.bulkCreate(usersData);
+      return createdUsers;
+    } catch (error) {
+      throw new Error(
+        `Error occurred while bulk creating users: ${error.message}`,
+      );
+    }
   }
 }

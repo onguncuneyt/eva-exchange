@@ -1,14 +1,13 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { PortfolioCreateResponseDto } from '../dtos/portfolioDtos/responses/PortfolioCreateResponseDto';
 import { DtoMapperService } from 'src/core/utils/dto-mapper.util';
-import { AddShareToPortfolioDto } from 'src/dtos/portfolioDtos/requests/AddShareToPortfolioRequest.dto';
-import { BuyShareRequestDto } from 'src/dtos/portfolioDtos/requests/BuyShareRequest.dto';
-import { SellShareRequestDto } from '../dtos/portfolioDtos/requests/SellShareRequest.dto';
+import { BuySellShareRequestDto } from 'src/dtos/portfolioDtos/requests/BuySellShareRequest.dto';
 import { UserRepository } from 'src/dao/repositories/UserRepository';
 import { PortfolioRepository } from '../dao/repositories/PortfolioRepository';
 import { ShareRepository } from 'src/dao/repositories/ShareRepository';
 import { PortfolioSharesRepository } from 'src/dao/repositories/PortfolioSharesRepository';
 import { TransactionRepository } from '../dao/repositories/TransactionRepository';
+import { PortfolioSharesResponseDto } from '../dtos/portfolioDtos/responses/PortfolioSharesResponse.Dto';
 
 @Injectable()
 export class PortfolioService {
@@ -22,6 +21,7 @@ export class PortfolioService {
   ) {}
 
   async createPortfolio(user: any): Promise<PortfolioCreateResponseDto> {
+    console.log(user.sub);
     let createdPortfolio = await this.portfolioRepository.create({
       userId: user.sub,
     });
@@ -32,49 +32,17 @@ export class PortfolioService {
     );
   }
 
-  async addShareToPortfolio(
-    addShareToPortfolioDto: AddShareToPortfolioDto,
+  async buyShare(
+    buySellShareRequestDto: BuySellShareRequestDto,
     currUser: any,
   ) {
-    const { shareId } = addShareToPortfolioDto;
-    const portfolio = await this.portfolioRepository.findOne(currUser);
-
-    if (!portfolio) {
-      throw new ForbiddenException('Portfolio not found');
-    }
-
-    const share = await this.shareRepository.findOne({
-      where: { id: shareId },
-    });
-
-    if (!share) {
-      throw new ForbiddenException('Share not found');
-    }
-
-    const existPortfolioShare = await this.portfolioSharesRepository.findOne(
-      portfolio.id,
-      shareId,
-    );
-
-    if (existPortfolioShare) {
-      throw new ForbiddenException('Share is already in portfolio');
-    }
-
-    return await this.portfolioSharesRepository.create(
-      portfolio.id,
-      shareId,
-      0,
-    );
-  }
-
-  async buyShare(buyShareRequestDto: BuyShareRequestDto, currUser: any) {
-    const { shareId, amount } = buyShareRequestDto;
+    const { shareId, amount } = buySellShareRequestDto;
     const { portfolio, share, user, existPortfolioShare } = await this.check(
       shareId,
       currUser.sub,
     );
 
-    if (share.amount < amount) {
+    if (share.amount < amount || share.amount === 0 || share.amount < 0) {
       throw new ForbiddenException('Not enough share');
     }
 
@@ -83,22 +51,22 @@ export class PortfolioService {
     }
 
     await user.update({
-      balance: user.balance - amount * share.rate,
+      balance: Number(user.balance) - Number(amount) * Number(share.rate),
     });
 
     await share.update({
-      amount: share.amount - amount,
+      amount: Number(share.amount) - Number(amount),
     });
 
-    let transaction = await this.transactionRepository.buyCreate(
-      buyShareRequestDto,
+    await this.transactionRepository.buyCreate(
+      buySellShareRequestDto,
       share,
       currUser,
     );
 
     if (existPortfolioShare) {
       return await existPortfolioShare.update({
-        amount: existPortfolioShare.amount + amount,
+        amount: Number(existPortfolioShare.amount) + Number(amount),
       });
     }
 
@@ -110,29 +78,16 @@ export class PortfolioService {
   }
 
   async check(shareId: string, userId: string) {
-    const portfolio = await this.portfolioRepository.findOne({
-      where: { userId: userId },
-    });
+    const portfolio = await this.portfolioRepository.findById(userId);
 
     if (!portfolio) {
       throw new ForbiddenException('Portfolio not found');
     }
 
-    const share = await this.shareRepository.findOne({
-      where: { id: shareId },
-    });
+    const share = await this.shareRepository.findOne(shareId);
 
     if (!share) {
       throw new ForbiddenException('Share not found');
-    }
-
-    const shareInPortfolio = await this.portfolioSharesRepository.findOne(
-      portfolio.id,
-      shareId,
-    );
-
-    if (!shareInPortfolio) {
-      throw new ForbiddenException('Share not found in portfolio');
     }
 
     const user = await this.userRepository.findById(userId);
@@ -142,21 +97,25 @@ export class PortfolioService {
       shareId,
     );
 
-    if (!existPortfolioShare) {
-      throw new ForbiddenException('Share not found in portfolio');
-    }
     return { portfolio, share, user, existPortfolioShare };
   }
 
-  async sellShare(sellShareRequestDto: SellShareRequestDto, currUser: any) {
-    const { shareId, amount } = sellShareRequestDto;
+  async sellShare(
+    buySellShareRequestDto: BuySellShareRequestDto,
+    currUser: any,
+  ) {
+    const { shareId, amount } = buySellShareRequestDto;
 
     const { share, user, existPortfolioShare } = await this.check(
       shareId,
       currUser.sub,
     );
 
-    if (existPortfolioShare.amount < amount) {
+    if (
+      existPortfolioShare.amount < amount ||
+      existPortfolioShare.amount === 0 ||
+      existPortfolioShare.amount < 0
+    ) {
       throw new ForbiddenException('Not enough share');
     }
 
@@ -169,43 +128,42 @@ export class PortfolioService {
     });
 
     await share.update({
-      amount: share.amount + amount,
+      amount: Number(share.amount) + Number(amount),
     });
 
-    let transaction = await this.transactionRepository.sellCreate(
-      sellShareRequestDto,
+    await this.transactionRepository.sellCreate(
+      buySellShareRequestDto,
       share,
       currUser,
     );
 
     return await existPortfolioShare.update({
-      amount: existPortfolioShare.amount - amount,
+      amount: Number(existPortfolioShare.amount) - Number(amount),
     });
   }
 
   async getAllPortfolio(currUser: any) {
-    const portfolio = await this.portfolioRepository.findOne({
-      where: { userId: currUser.sub },
-    });
+    const portfolio = await this.portfolioRepository.findAllById(currUser.sub);
 
     if (!portfolio) {
       throw new ForbiddenException('Portfolio not found');
     }
 
-    const portfolioShares = await this.portfolioSharesRepository.findAllById(
-      portfolio.id,
-    );
+    let portfolioSharesList: PortfolioSharesResponseDto[] = [];
+    const portfolioShares = [];
+    for (const portfolioItem of portfolio) {
+      portfolioShares.push(
+        await this.portfolioSharesRepository.findAllById(portfolioItem.id),
+      );
+      portfolioSharesList.push({
+        portfolio: portfolioItem,
+        shares: portfolioShares,
+      });
+    }
+    return portfolioSharesList;
+  }
 
-    return await Promise.all(
-      portfolioShares.map(async (portfolioShare) => {
-        const share = await this.shareRepository.findOne(
-          portfolioShare.shareId,
-        );
-        return {
-          ...share.toJSON(),
-          amount: portfolioShare.amount,
-        };
-      }),
-    );
+  async listAllPortfolios(user: any) {
+    return await this.portfolioRepository.findAllById(user.sub);
   }
 }

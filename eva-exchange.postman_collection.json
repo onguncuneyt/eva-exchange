@@ -1,0 +1,431 @@
+{
+	"info": {
+		"_postman_id": "a4daf681-1abc-4086-a3aa-2b141fb3671b",
+		"name": "eva-exchange",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21434011"
+	},
+	"item": [
+		{
+			"name": "share",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\":\"Apple\",\n    \"symbol\":\"app\",\n    \"amount\":200,\n    \"rate\":100\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/share/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"share",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"symbol\":\"goo\",\n    \"rate\":60\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/share/update",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"share",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "listShares",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/share/all",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"share",
+								"all"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "signup",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\":\"john@gmail.com\",\n    \"password\":\"password1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/signup",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\":\"john@gmail.com\",\n    \"password\":\"password1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "portfolio",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/portfolio/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"portfolio",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "buy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"shareId\":\"1ac1e354-ba1c-4838-911d-d9a8cc59e972\",\n    \"portfolioId\":\"6534aad7-811e-4473-b38d-484ee229044e\",\n    \"amount\":5,\n    \"type\":\"BUY\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/portfolio/buy",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"portfolio",
+								"buy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sell",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"shareId\":\"3f37b643-e647-4cb3-8a22-ba3fbf5f3ca9\",\n    \"portfolioId\":\"c19878d8-7452-4b07-88f4-607d0f5b848e\",\n    \"amount\":10,\n    \"type\":\"SELL\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/portfolio/sell",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"portfolio",
+								"sell"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "listAllPortfolioShares",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/portfolio/portfolio-shares",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"portfolio",
+								"portfolio-shares"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "listAllPortfolios",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/portfolio/list-portfolios",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"portfolio",
+								"list-portfolios"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "addMoney",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\":500\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/add-money",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"add-money"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "makeAdmin",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/make-admin?id=b2600aba-7e06-4815-812c-0e2f3538f3d3",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"make-admin"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "b2600aba-7e06-4815-812c-0e2f3538f3d3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAll",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/all",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "userBulkCreate",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/bulk-create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"bulk-create"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "transactions",
+			"item": [
+				{
+					"name": "userTransactions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/transaction/user-transactions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"transaction",
+								"user-transactions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "allTransactions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/transaction/all-transactions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"transaction",
+								"all-transactions"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG5AZ21haWwuY29tIiwicm9sZXMiOlsidXNlciJdLCJzdWIiOiIyNTI4OTBmMS1iNzI3LTQ3ODktYjJkOC1mMjY5ODk4NzdjY2MiLCJpYXQiOjE3MTY4Mzg4NTAsImV4cCI6MTcxNjkyNTI1MH0.0an-F2zO7adJJWzQZey22zXWpCOpMr3nA7BVCWJxq4k",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "localhost:3000",
+			"type": "string"
+		}
+	]
+}
